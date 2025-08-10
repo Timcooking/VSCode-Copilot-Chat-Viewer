@@ -1,0 +1,34 @@
+title: VSCode-Copilot-Chat-Viewer
+description: A modern Discord-style visualizer for GitHub Copilot chat records in VS Code. Extract and view your hidden conversation history with beautiful, responsive interface and multi-language support.
+author: Timcooking
+url: https://timcooking.github.io
+baseurl: /VSCode-Copilot-Chat-Viewer
+
+# GitHub Pages settings
+theme: jekyll-theme-minimal
+plugins:
+  - jekyll-github-metadata
+
+# Exclude files from Jekyll processing
+exclude:
+  - README-zh.md
+  - demo-chat.json
+  - test1.json
+  - refactor-handlers-chat.json
+
+# Include files that start with underscores
+include:
+  - _config.yml
+
+# SEO settings
+lang: en
+google_analytics: # Add your GA tracking ID if needed
+
+# Social media
+github_username: Timcooking
+
+# Project metadata
+project:
+  name: VSCode-Copilot-Chat-Viewer
+  version: 1.0.0
+  license: MIT

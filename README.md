@@ -1,8 +1,35 @@
 # 🌟 VSCode-Copilot-Chat-Viewer
 
-**Extract and Visualize Your Hidden GitHub Copilot Conversations in VS Code**
+**Extract and Visualize Your H## 📁 File Structure
+
+```
+VSCode-Copilot-Chat-Viewer/
+├── index.html                     # Main application (GitHub Pages entry)
+├── chat-visualizer.html           # Alternative entry point
+├── README.md                      # English documentation
+├── README-zh.md                   # Chinese documentation
+├── demo-chat.json                 # Demo chat record for testing
+├── test1.json                     # Sample chat record
+├── refactor-handlers-chat.json    # Sample chat record
+├── LICENSE                        # MIT License
+├── _config.yml                    # Jekyll configuration
+├── .gitignore                     # Git ignore rules
+└── .github/
+    └── workflows/
+        └── pages.yml              # GitHub Actions for auto-deployment
+```b Copilot Conversations in VS Code**
+
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-blue?style=flat-square&logo=github)](https://timcooking.github.io/VSCode-Copilot-Chat-Viewer/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/Timcooking/VSCode-Copilot-Chat-Viewer?style=flat-square)](https://github.com/Timcooking/VSCode-Copilot-Chat-Viewer/stargazers)
 
 A modern, Discord-style chat record visualizer for GitHub Copilot in VS Code conversations.
+
+## 🚀 Live Demo
+
+**[Try it now on GitHub Pages!](https://timcooking.github.io/VSCode-Copilot-Chat-Viewer/)**
+
+No installation required - just open the link and start visualizing your chat records!
 
 ## 💡 Why This Tool?
 
