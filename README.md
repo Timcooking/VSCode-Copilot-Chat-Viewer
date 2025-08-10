@@ -1,5 +1,69 @@
 # 🌟 VSCode-Copilot-Chat-Viewer
 
+**Extract and visualize your hidden GitHub Copilot chat history from VS Code**
+
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Try_Now-blue?style=for-the-badge)](https://timcooking.github.io/VSCode-Copilot-Chat-Viewer/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+## 💡 Why This Tool?
+
+When you close VS Code, your Copilot chat history seems to disappear - but it's actually stored locally! This tool helps you **recover and visualize** those conversations in a beautiful Discord-style interface.
+
+## 🎯 Key Features
+
+- 🎨 **Discord-style dark theme** - Modern, professional interface
+- 🌍 **Multi-language support** - Switch between English/Chinese
+- 📱 **Responsive design** - Works on desktop and mobile
+- 🔒 **Privacy-first** - All processing happens locally
+- ⚡ **Zero dependencies** - Pure HTML/CSS/JavaScript
+
+## 🚀 Quick Start
+
+### 1. Find Your Chat Files
+Navigate to: `C:\Users\[YourUsername]\AppData\Roaming\Code\User\workspaceStorage\`
+
+**Quick tip**: Press `Win + R`, type `%APPDATA%\Code\User\workspaceStorage\` and hit Enter
+
+### 2. Extract Chat Records
+- Look for folders with random IDs (your workspaces)
+- Find the `chatSessions` folder
+- Copy any `.json` file from there
+
+### 3. Visualize
+- Open the [**Live Demo**](https://timcooking.github.io/VSCode-Copilot-Chat-Viewer/)
+- Upload your JSON file
+- Enjoy your conversation history!
+
+## 📝 Testing
+
+Don't have chat files yet? Use our [`demo-chat.json`](demo-chat.json) to test the tool.
+
+## 🛠️ Local Usage
+
+1. Download this repository
+2. Open `index.html` in your browser
+3. Upload your chat files
+
+## 📱 Browser Support
+
+Chrome, Firefox, Safari, Edge (modern versions)
+
+## 🔧 Troubleshooting
+
+**Can't find files?** Make sure hidden files are visible in Windows Explorer.
+
+**File won't parse?** Ensure it's a valid JSON from VS Code's chatSessions folder.
+
+## 🤝 Contributing
+
+Issues and pull requests welcome! See [LICENSE](LICENSE) for details.
+
+---
+
+> 💬 **Rediscover your AI conversations** - Never lose your valuable Copilot chats again!
+
+> 🌍 **中文文档**: 查看 [README-zh.md](README-zh.md) 获取中文说明
+
 **Extract and Visualize Your H## 📁 File Structure
 
 ```
