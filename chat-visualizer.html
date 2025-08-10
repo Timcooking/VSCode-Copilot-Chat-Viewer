@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSCode-Copilot-Chat-Viewer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #36393f;
+            color: #dcddde;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .upload-area {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #2f3136;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid #40444b;
+            position: relative;
+        }
+
+        .upload-area.hidden {
+            display: none !important;
+        }
+
+        .upload-area .language-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #5865f2;
+            border: none;
+            border-radius: 3px;
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 500;
+        }
+
+        .upload-area .language-toggle:hover {
+            background: #4752c4;
+        }
+
+        .upload-area h1 {
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        .upload-area .subtitle {
+            color: #b9bbbe;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .header-buttons .language-toggle {
+            background: #4f545c;
+            color: #dcddde;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .header-buttons .language-toggle:hover {
+            background: #5865f2;
+            color: white;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 30px 20px;
+            border: 2px dashed #5865f2;
+            border-radius: 8px;
+            background: #40444b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .file-input:hover {
+            background: #484c52;
+            border-color: #4752c4;
+        }
+
+        .file-input .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #5865f2;
+        }
+
+        .file-input .text {
+            color: #dcddde;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .file-input .hint {
+            color: #b9bbbe;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            width: 100%;
+            height: 100vh;
+            background: #36393f;
+            display: none;
+            flex-direction: column;
+        }
+
+        .chat-container.show {
+            display: flex;
+        }
+
+        .chat-header {
+            background: #202225;
+            color: white;
+            padding: 16px 20px;
+            border-bottom: 1px solid #40444b;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .chat-header .info {
+            font-size: 14px;
+            color: #b9bbbe;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .back-button {
+            background: #4f545c;
+            color: #dcddde;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .back-button:hover {
+            background: #5865f2;
+            color: white;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #36393f;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #2f3136;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #202225;
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #1a1d20;
+        }
+
+        .conversation {
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .conversation:nth-child(even) {
+            animation-delay: 0.1s;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            max-width: 85%;
+            word-wrap: break-word;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            background: #5865f2;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message {
+            background: #2f3136;
+            color: #dcddde;
+            margin-right: auto;
+            border: 1px solid #40444b;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-author {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            opacity: 0.7;
+        }
+
+        .user-message .message-author {
+            color: #ffffff;
+        }
+
+        .ai-message .message-author {
+            color: #5865f2;
+        }
+
+        .message-content {
+            font-size: 15px;
+            white-space: pre-wrap;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .ai-message .message-time {
+            text-align: left;
+        }
+
+        .separator {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .separator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #40444b;
+        }
+
+        .separator span {
+            background: #36393f;
+            color: #72767d;
+            padding: 0 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stats {
+            background: #2f3136;
+            border: 1px solid #40444b;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats-title {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: #40444b;
+            border-radius: 6px;
+            padding: 12px;
+        }
+
+        .stat-value {
+            color: #5865f2;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: #b9bbbe;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #ed4245;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .upload-area {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+
+            .chat-header {
+                padding: 12px 16px;
+            }
+
+            .chat-header h1 {
+                font-size: 16px;
+            }
+
+            .chat-messages {
+                padding: 16px;
+            }
+
+            .message {
+                max-width: 95%;
+                padding: 10px 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+        }
+
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 代码块样式 */
+        .message-content code {
+            background: #40444b;
+            color: #dcddde;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .ai-message .message-content code {
+            background: #202225;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-area" id="uploadArea">
+        <button class="language-toggle" onclick="toggleLanguage()">EN</button>
+        <h1 data-text="chat-visualizer-title">VSCode Copilot 聊天记录可视化</h1>
+        <p class="subtitle" data-text="upload-subtitle">拖拽或点击上传 JSON 格式的聊天记录文件</p>
+        
+        <div class="file-input" onclick="document.getElementById('fileInput').click()">
+            <div class="icon">📄</div>
+            <div class="text" data-text="upload-text">选择聊天记录文件</div>
+            <div class="hint" data-text="upload-hint">支持 JSON 格式</div>
+        </div>
+        
+        <input type="file" id="fileInput" accept=".json" style="display: none;">
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <h1 data-text="chat-title">💬 聊天记录</h1>
+                <div class="info" id="chatInfo" data-text="loading">加载中...</div>
+            </div>
+            <div class="header-buttons">
+                <button class="back-button" onclick="backToUpload()" data-text="back-button">返回</button>
+                <button class="language-toggle" onclick="toggleLanguage()">EN</button>
+            </div>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+    </div>
+
+    <script>
+        // 多语言支持
+        const translations = {
+            'zh': {
+                'chat-visualizer-title': 'VSCode Copilot 聊天记录可视化',
+                'upload-subtitle': '拖拽或点击上传 JSON 格式的聊天记录文件',
+                'upload-text': '选择聊天记录文件',
+                'upload-hint': '支持 JSON 格式',
+                'chat-title': '💬 聊天记录',
+                'loading': '加载中...',
+                'back-button': '返回',
+                'user-label': '用户',
+                'ai-label': 'AI助手',
+                'stats-title': '聊天统计',
+                'total-conversations': '对话轮次',
+                'user-messages': '用户消息',
+                'ai-messages': 'AI回复',
+                'error-parsing': '解析文件时出错',
+                'error-format': '文件格式不正确或不支持',
+                'conversation-separator': '对话 {0}',
+                'today': '今天',
+                'yesterday': '昨天'
+            },
+            'en': {
+                'chat-visualizer-title': 'VSCode Copilot Chat Viewer',
+                'upload-subtitle': 'Drag and drop or click to upload JSON chat record file',
+                'upload-text': 'Select Chat Record File',
+                'upload-hint': 'Supports JSON format',
+                'chat-title': '💬 Chat Records',
+                'loading': 'Loading...',
+                'back-button': 'Back',
+                'user-label': 'User',
+                'ai-label': 'AI Assistant',
+                'stats-title': 'Chat Statistics',
+                'total-conversations': 'Conversations',
+                'user-messages': 'User Messages',
+                'ai-messages': 'AI Replies',
+                'error-parsing': 'Error parsing file',
+                'error-format': 'Incorrect file format or unsupported',
+                'conversation-separator': 'Conversation {0}',
+                'today': 'Today',
+                'yesterday': 'Yesterday'
+            }
+        };
+
+        let currentLang = 'zh';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            updateLanguage();
+            
+            // 更新当前可见的语言切换按钮文本
+            const visibleButtons = Array.from(document.querySelectorAll('.language-toggle')).filter(btn => {
+                return btn.offsetParent !== null; // 检查按钮是否可见
+            });
+            
+            visibleButtons.forEach(btn => {
+                btn.textContent = currentLang === 'zh' ? 'EN' : '中';
+            });
+        }
+
+        function updateLanguage() {
+            const texts = translations[currentLang];
+            document.querySelectorAll('[data-text]').forEach(element => {
+                const key = element.getAttribute('data-text');
+                if (texts[key]) {
+                    if (element.tagName === 'INPUT') {
+                        element.placeholder = texts[key];
+                    } else {
+                        element.textContent = texts[key];
+                    }
+                }
+            });
+            
+            // 更新HTML lang属性
+            document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+        }
+
+        function getText(key, ...args) {
+            let text = translations[currentLang][key] || key;
+            args.forEach((arg, index) => {
+                text = text.replace(`{${index}}`, arg);
+            });
+            return text;
+        }
+
+        class JSONChatParser {
+            constructor() {
+                this.conversations = [];
+                this.userMessages = 0;
+                this.aiMessages = 0;
+            }
+
+            parseFile(content) {
+                try {
+                    const data = JSON.parse(content);
+                    
+                    if (Array.isArray(data)) {
+                        this.parseArrayFormat(data);
+                    } else if (data.requests || data.history || data.messages || data.conversations) {
+                        this.parseObjectFormat(data);
+                    } else {
+                        // 尝试找到任何可能的消息数据
+                        const possibleKeys = Object.keys(data);
+                        let foundData = false;
+                        
+                        for (const key of possibleKeys) {
+                            if (Array.isArray(data[key]) && data[key].length > 0) {
+                                this.parseArrayFormat(data[key]);
+                                foundData = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!foundData) {
+                            throw new Error('无法识别的JSON格式，请确保文件包含聊天记录数据');
+                        }
+                    }
+                    
+                    if (this.conversations.length === 0) {
+                        throw new Error('文件中没有找到有效的聊天记录');
+                    }
+                    
+                    return {
+                        conversations: this.conversations,
+                        stats: {
+                            totalConversations: this.conversations.length,
+                            userMessages: this.userMessages,
+                            aiMessages: this.aiMessages
+                        }
+                    };
+                } catch (error) {
+                    console.error('Parsing error:', error);
+                    throw new Error(getText('error-parsing') + ': ' + error.message);
+                }
+            }
+
+            parseArrayFormat(data) {
+                let currentConversation = null;
+                
+                data.forEach((item, index) => {
+                    if (this.isUserMessage(item)) {
+                        // 开始新对话
+                        if (currentConversation) {
+                            this.conversations.push(currentConversation);
+                        }
+                        currentConversation = {
+                            id: this.conversations.length + 1,
+                            messages: []
+                        };
+                        
+                        currentConversation.messages.push({
+                            type: 'user',
+                            content: this.extractContent(item),
+                            timestamp: this.extractTimestamp(item)
+                        });
+                        this.userMessages++;
+                    } else if (this.isAIMessage(item) && currentConversation) {
+                        currentConversation.messages.push({
+                            type: 'ai',
+                            content: this.extractContent(item),
+                            timestamp: this.extractTimestamp(item)
+                        });
+                        this.aiMessages++;
+                    }
+                });
+                
+                if (currentConversation && currentConversation.messages.length > 0) {
+                    this.conversations.push(currentConversation);
+                }
+            }
+
+            parseObjectFormat(data) {
+                // 处理GitHub Copilot特定格式
+                if (data.requests && Array.isArray(data.requests)) {
+                    data.requests.forEach((request, index) => {
+                        const conversation = {
+                            id: index + 1,
+                            messages: []
+                        };
+
+                        // 添加用户消息
+                        if (request.message && request.message.text) {
+                            conversation.messages.push({
+                                type: 'user',
+                                content: request.message.text,
+                                timestamp: new Date(request.requestId ? Date.now() - (data.requests.length - index) * 60000 : Date.now())
+                            });
+                            this.userMessages++;
+                        }
+
+                        // 添加AI回复
+                        if (request.response && Array.isArray(request.response)) {
+                            let aiContent = '';
+                            request.response.forEach(responseItem => {
+                                if (responseItem.value && typeof responseItem.value === 'string') {
+                                    aiContent += responseItem.value + '\n';
+                                } else if (responseItem.invocationMessage && responseItem.invocationMessage.value) {
+                                    aiContent += responseItem.invocationMessage.value + '\n';
+                                } else if (responseItem.pastTenseMessage && responseItem.pastTenseMessage.value) {
+                                    aiContent += responseItem.pastTenseMessage.value + '\n';
+                                }
+                            });
+                            
+                            if (aiContent.trim()) {
+                                conversation.messages.push({
+                                    type: 'ai',
+                                    content: aiContent.trim(),
+                                    timestamp: new Date(request.requestId ? Date.now() - (data.requests.length - index) * 60000 + 30000 : Date.now())
+                                });
+                                this.aiMessages++;
+                            }
+                        }
+
+                        if (conversation.messages.length > 0) {
+                            this.conversations.push(conversation);
+                        }
+                    });
+                } else {
+                    // 回退到原来的数组解析
+                    const messages = data.history || data.messages || data.conversations || [];
+                    this.parseArrayFormat(messages);
+                }
+            }
+
+            isUserMessage(item) {
+                // 检测用户消息的多种模式
+                const content = this.extractContent(item);
+                const role = item.role || item.sender || item.from || '';
+                
+                // 基于角色判断
+                if (['user', 'human', 'person'].includes(role.toLowerCase())) {
+                    return true;
+                }
+                
+                // 基于内容特征判断
+                if (typeof content === 'string') {
+                    // 用户消息通常较短，更直接
+                    const indicators = [
+                        /^[^。！？.!?]*[？?]$/, // 以问号结尾
+                        /^(请|帮我|如何|怎么|能否|可以)/,  // 请求性语言
+                        /^(写|创建|生成|制作|实现)/,     // 指令性语言
+                        /^(解释|说明|介绍)/,           // 询问性语言
+                    ];
+                    
+                    if (indicators.some(pattern => pattern.test(content.trim()))) {
+                        return true;
+                    }
+                    
+                    // 短消息更可能是用户消息
+                    if (content.length < 200 && !this.hasAICharacteristics(content)) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+
+            isAIMessage(item) {
+                const content = this.extractContent(item);
+                const role = item.role || item.sender || item.from || '';
+                
+                // 基于角色判断
+                if (['assistant', 'ai', 'bot', 'copilot'].includes(role.toLowerCase())) {
+                    return true;
+                }
+                
+                return this.hasAICharacteristics(content);
+            }
+
+            hasAICharacteristics(content) {
+                if (typeof content !== 'string') return false;
+                
+                // AI回复的特征
+                const aiIndicators = [
+                    /我来帮你|我可以帮助|让我来/,
+                    /以下是|下面是|这里是/,
+                    /```[\s\S]*```/,  // 包含代码块
+                    /步骤如下|具体步骤|实现方法/,
+                    /根据你的需求|按照你的要求/,
+                    /建议|推荐|注意|提示/,
+                    content.length > 500,  // 长回复更可能是AI
+                ];
+                
+                return aiIndicators.some(pattern => 
+                    typeof pattern === 'boolean' ? pattern : pattern.test(content)
+                );
+            }
+
+            extractContent(item) {
+                // 尝试多种可能的内容字段
+                return item.content || 
+                       item.text || 
+                       item.message || 
+                       item.data || 
+                       (typeof item === 'string' ? item : JSON.stringify(item));
+            }
+
+            extractTimestamp(item) {
+                const timestamp = item.timestamp || 
+                                item.time || 
+                                item.created_at || 
+                                item.date || 
+                                Date.now();
+                
+                return new Date(timestamp);
+            }
+        }
+
+        class ChatVisualizer {
+            constructor() {
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                const fileInput = document.getElementById('fileInput');
+                const uploadArea = document.getElementById('uploadArea');
+
+                fileInput.addEventListener('change', (e) => this.handleFile(e.target.files[0]));
+
+                // 拖拽功能
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.transform = 'scale(1.02)';
+                });
+
+                uploadArea.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.transform = 'scale(1)';
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.transform = 'scale(1)';
+                    this.handleFile(e.dataTransfer.files[0]);
+                });
+            }
+
+            async handleFile(file) {
+                if (!file) return;
+
+                if (!file.name.toLowerCase().endsWith('.json')) {
+                    this.showError(getText('error-format'));
+                    return;
+                }
+
+                try {
+                    const content = await this.readFile(file);
+                    const parser = new JSONChatParser();
+                    const result = parser.parseFile(content);
+                    
+                    this.displayChat(result);
+                } catch (error) {
+                    this.showError(error.message);
+                }
+            }
+
+            readFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsText(file, 'utf-8');
+                });
+            }
+
+            displayChat(result) {
+                const { conversations, stats } = result;
+                
+                document.getElementById('uploadArea').classList.add('hidden');
+                document.getElementById('chatContainer').classList.add('show');
+                
+                this.updateChatInfo(stats);
+                this.renderMessages(conversations);
+            }
+
+            updateChatInfo(stats) {
+                const info = `${stats.totalConversations} ${getText('total-conversations')} • ${stats.userMessages + stats.aiMessages} ${getText('user-messages')}`;
+                document.getElementById('chatInfo').textContent = info;
+            }
+
+            renderMessages(conversations) {
+                const container = document.getElementById('chatMessages');
+                container.innerHTML = '';
+
+                // 添加统计信息
+                this.addStatsSection(container, conversations);
+
+                conversations.forEach((conversation, index) => {
+                    // 添加对话分隔符
+                    if (index > 0) {
+                        const separator = document.createElement('div');
+                        separator.className = 'separator';
+                        separator.innerHTML = `<span>${getText('conversation-separator', index + 1)}</span>`;
+                        container.appendChild(separator);
+                    }
+
+                    const conversationDiv = document.createElement('div');
+                    conversationDiv.className = 'conversation';
+
+                    conversation.messages.forEach(message => {
+                        const messageDiv = this.createMessageElement(message);
+                        conversationDiv.appendChild(messageDiv);
+                    });
+
+                    container.appendChild(conversationDiv);
+                });
+
+                // 滚动到顶部
+                container.scrollTop = 0;
+            }
+
+            addStatsSection(container, conversations) {
+                const userCount = conversations.reduce((sum, conv) => 
+                    sum + conv.messages.filter(m => m.type === 'user').length, 0);
+                const aiCount = conversations.reduce((sum, conv) => 
+                    sum + conv.messages.filter(m => m.type === 'ai').length, 0);
+
+                const statsDiv = document.createElement('div');
+                statsDiv.className = 'stats fade-in';
+                statsDiv.innerHTML = `
+                    <div class="stats-title">${getText('stats-title')}</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">${conversations.length}</div>
+                            <div class="stat-label">${getText('total-conversations')}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${userCount}</div>
+                            <div class="stat-label">${getText('user-messages')}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${aiCount}</div>
+                            <div class="stat-label">${getText('ai-messages')}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(statsDiv);
+            }
+
+            createMessageElement(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.type}-message`;
+
+                const authorDiv = document.createElement('div');
+                authorDiv.className = 'message-author';
+                authorDiv.textContent = message.type === 'user' ? getText('user-label') : getText('ai-label');
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.textContent = message.content;
+
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'message-time';
+                timeDiv.textContent = this.formatTime(message.timestamp);
+
+                messageDiv.appendChild(authorDiv);
+                messageDiv.appendChild(contentDiv);
+                messageDiv.appendChild(timeDiv);
+
+                return messageDiv;
+            }
+
+            formatTime(timestamp) {
+                if (!timestamp || isNaN(new Date(timestamp))) {
+                    return '';
+                }
+
+                const date = new Date(timestamp);
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+                const messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+                const timeStr = date.toLocaleTimeString(currentLang === 'zh' ? 'zh-CN' : 'en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                if (messageDate.getTime() === today.getTime()) {
+                    return `${getText('today')} ${timeStr}`;
+                } else if (messageDate.getTime() === yesterday.getTime()) {
+                    return `${getText('yesterday')} ${timeStr}`;
+                } else {
+                    return date.toLocaleDateString(currentLang === 'zh' ? 'zh-CN' : 'en-US') + ' ' + timeStr;
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => {
+                    document.body.removeChild(errorDiv);
+                }, 5000);
+            }
+        }
+
+        function backToUpload() {
+            document.getElementById('chatContainer').classList.remove('show');
+            document.getElementById('uploadArea').classList.remove('hidden');
+            document.getElementById('fileInput').value = '';
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            new ChatVisualizer();
+            updateLanguage();
+            
+            // 初始化语言切换按钮
+            const visibleButtons = Array.from(document.querySelectorAll('.language-toggle')).filter(btn => {
+                return btn.offsetParent !== null;
+            });
+            
+            visibleButtons.forEach(btn => {
+                btn.textContent = currentLang === 'zh' ? 'EN' : '中';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+{
+  "version": 3,
+  "requesterUsername": "TestUser",
+  "requesterAvatarIconUri": {
+    "$mid": 1,
+    "path": "/u/12345678",
+    "scheme": "https",
+    "authority": "avatars.githubusercontent.com",
+    "query": "v=4"
+  },
+  "responderUsername": "GitHub Copilot",
+  "responderAvatarIconUri": {
+    "id": "copilot"
+  },
+  "initialLocation": "panel",
+  "requests": [
+    {
+      "requestId": "request_demo_001",
+      "message": {
+        "text": "请帮我创建一个简单的HTML页面，包含标题和段落",
+        "parts": [
+          {
+            "range": {
+              "start": 0,
+              "endExclusive": 32
+            },
+            "editorRange": {
+              "startLineNumber": 1,
+              "startColumn": 1,
+              "endLineNumber": 1,
+              "endColumn": 33
+            },
+            "text": "请帮我创建一个简单的HTML页面，包含标题和段落",
+            "kind": "text"
+          }
+        ]
+      },
+      "variableData": {
+        "variables": []
+      },
+      "response": [
+        {
+          "value": "我来帮你创建一个简单的HTML页面。我会生成包含标题和段落的基础HTML结构。",
+          "supportThemeIcons": false,
+          "supportHtml": false,
+          "baseUri": {
+            "$mid": 1,
+            "path": "/C:/Users/TestUser/Documents/",
+            "scheme": "file"
+          }
+        },
+        {
+          "kind": "prepareToolInvocation",
+          "toolName": "copilot_createFile"
+        },
+        {
+          "kind": "toolInvocationSerialized",
+          "invocationMessage": {
+            "value": "正在创建 HTML 文件",
+            "supportThemeIcons": false,
+            "supportHtml": false
+          },
+          "pastTenseMessage": {
+            "value": "已创建 HTML 文件",
+            "supportThemeIcons": false,
+            "supportHtml": false
+          },
+          "isConfirmed": true,
+          "isComplete": true,
+          "toolCallId": "demo_tool_001",
+          "toolId": "copilot_createFile"
+        }
+      ]
+    },
+    {
+      "requestId": "request_demo_002",
+      "message": {
+        "text": "能否为这个页面添加一些CSS样式？",
+        "parts": [
+          {
+            "range": {
+              "start": 0,
+              "endExclusive": 19
+            },
+            "editorRange": {
+              "startLineNumber": 1,
+              "startColumn": 1,
+              "endLineNumber": 1,
+              "endColumn": 20
+            },
+            "text": "能否为这个页面添加一些CSS样式？",
+            "kind": "text"
+          }
+        ]
+      },
+      "variableData": {
+        "variables": []
+      },
+      "response": [
+        {
+          "value": "当然可以！我来为页面添加现代化的CSS样式，包括颜色、字体和布局设计。",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        },
+        {
+          "value": "我会创建一个独立的CSS文件来管理样式，这样便于维护和修改。",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        }
+      ]
+    },
+    {
+      "requestId": "request_demo_003",
+      "message": {
+        "text": "请添加一些JavaScript交互功能",
+        "parts": [
+          {
+            "range": {
+              "start": 0,
+              "endExclusive": 18
+            },
+            "editorRange": {
+              "startLineNumber": 1,
+              "startColumn": 1,
+              "endLineNumber": 1,
+              "endColumn": 19
+            },
+            "text": "请添加一些JavaScript交互功能",
+            "kind": "text"
+          }
+        ]
+      },
+      "variableData": {
+        "variables": []
+      },
+      "response": [
+        {
+          "value": "好的！我来为页面添加交互功能。可以包括按钮点击事件、表单验证、动画效果等。",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        },
+        {
+          "kind": "prepareToolInvocation",
+          "toolName": "copilot_createFile"
+        },
+        {
+          "kind": "toolInvocationSerialized",
+          "invocationMessage": {
+            "value": "正在创建 JavaScript 文件",
+            "supportThemeIcons": false,
+            "supportHtml": false
+          },
+          "pastTenseMessage": {
+            "value": "已创建 JavaScript 文件，包含交互功能",
+            "supportThemeIcons": false,
+            "supportHtml": false
+          },
+          "isConfirmed": true,
+          "isComplete": true,
+          "toolCallId": "demo_tool_002",
+          "toolId": "copilot_createFile"
+        },
+        {
+          "value": "JavaScript文件已经创建完成，包含了点击事件处理、表单验证和简单的动画效果。",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        }
+      ]
+    },
+    {
+      "requestId": "request_demo_004",
+      "message": {
+        "text": "如何让页面变得响应式？",
+        "parts": [
+          {
+            "range": {
+              "start": 0,
+              "endExclusive": 12
+            },
+            "editorRange": {
+              "startLineNumber": 1,
+              "startColumn": 1,
+              "endLineNumber": 1,
+              "endColumn": 13
+            },
+            "text": "如何让页面变得响应式？",
+            "kind": "text"
+          }
+        ]
+      },
+      "variableData": {
+        "variables": []
+      },
+      "response": [
+        {
+          "value": "让页面响应式的关键是使用CSS媒体查询和弹性布局。我来为你添加响应式设计。",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        },
+        {
+          "value": "响应式设计包括：\n1. 设置viewport元标签\n2. 使用CSS Grid或Flexbox布局\n3. 添加媒体查询适配不同屏幕尺寸\n4. 优化图片和字体大小",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        }
+      ]
+    },
+    {
+      "requestId": "request_demo_005",
+      "message": {
+        "text": "请优化页面的性能",
+        "parts": [
+          {
+            "range": {
+              "start": 0,
+              "endExclusive": 9
+            },
+            "editorRange": {
+              "startLineNumber": 1,
+              "startColumn": 1,
+              "endLineNumber": 1,
+              "endColumn": 10
+            },
+            "text": "请优化页面的性能",
+            "kind": "text"
+          }
+        ]
+      },
+      "variableData": {
+        "variables": []
+      },
+      "response": [
+        {
+          "value": "我来帮你优化页面性能。性能优化可以从多个方面进行：",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        },
+        {
+          "value": "性能优化策略：\n- 压缩CSS和JavaScript文件\n- 优化图片格式和大小\n- 使用CDN加速资源加载\n- 实现懒加载\n- 减少HTTP请求数量\n- 启用浏览器缓存",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        },
+        {
+          "value": "这些优化措施可以显著提升页面加载速度和用户体验。",
+          "supportThemeIcons": false,
+          "supportHtml": false
+        }
+      ]
+    }
+  ]
+}
